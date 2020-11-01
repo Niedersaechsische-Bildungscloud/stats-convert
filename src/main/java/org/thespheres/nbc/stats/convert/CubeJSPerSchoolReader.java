@@ -32,7 +32,7 @@ import org.thespheres.nbc.stats.convert.model.School;
  */
 public class CubeJSPerSchoolReader extends AbstractCubeJSReader {
 
-    public static final String QUERY = "{\"measures\":[\"Sessions.count\",\"Events.activeUsers\"],\"dimensions\":[\"Sessions.schoolId\"],\"timeDimensions\":[{\"dimension\":\"Events.timeStamp\",\"dateRange\":\"last 1000 days\",\"granularity\":\"day\"}]}";
+    public static final String QUERY = "{\"limit\":50000,\"measures\":[\"Sessions.count\",\"Events.activeUsers\"],\"dimensions\":[\"Sessions.schoolId\"],\"timeDimensions\":[{\"dimension\":\"Events.timeStamp\",\"dateRange\":\"last 1000 days\",\"granularity\":\"day\"}]}";
     final NumberFormat format = NumberFormat.getNumberInstance(Locale.GERMANY);
     private final Schools schools;
 

@@ -18,6 +18,8 @@ import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -34,6 +36,7 @@ import org.thespheres.nbc.stats.convert.model.QueryResult;
  */
 public class AbstractCubeJSReader {
 
+    public static final int MAX_RETRY = 10;
     protected final CloseableHttpClient client;
     protected final String cubeJS;
     protected final Path outputDir;
@@ -51,7 +54,9 @@ public class AbstractCubeJSReader {
                 .create();
         final HttpGet get = new HttpGet(uri);
         QueryResult result = executeQueryImpl(get, uri, gson);
-        if (result == null || result.getQueryData() == null) {
+        int retry = 0;
+        while (result == null || result.getQueryData() == null && retry++ <= MAX_RETRY) {
+            Logger.getLogger(SchoolsAPI.class.getName()).log(Level.INFO, "Retry {0}", retry);
             Thread.sleep(10 * 1000);
             result = executeQueryImpl(get, uri, gson);
         }
@@ -66,6 +71,11 @@ public class AbstractCubeJSReader {
             throw new IOException("Unexpected response status: " + response.getStatusLine() + " at: " + uri);
         }
         HttpEntity entity = response.getEntity();
+//        String content = EntityUtils.toString(entity);
+//        System.out.println(content);
+//        if (true) {
+//            return null;
+//        }
         final QueryResult result;
         try (final InputStream is = entity.getContent()) {
             final BufferedInputStream bis = new BufferedInputStream(is);

@@ -13,6 +13,8 @@ import com.google.gson.annotations.SerializedName;
  */
 public class Config {
 
+    @SerializedName("schools-file")
+    private String schoolsFile;
     @SerializedName("api-url")
     private String api;
     @SerializedName("cubejs-url")
@@ -26,6 +28,14 @@ public class Config {
 
     public void setApi(String api) {
         this.api = api;
+    }
+
+    public String getSchoolsFile() {
+        return schoolsFile;
+    }
+
+    public void setSchoolsFile(String schoolsFile) {
+        this.schoolsFile = schoolsFile;
     }
 
     public String getCubeJS() {
