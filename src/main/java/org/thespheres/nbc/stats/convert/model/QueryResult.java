@@ -13,10 +13,21 @@ import java.util.List;
  */
 public class QueryResult {
 
+    public static final String ERROR_CONTINUE_WAIT = "Continue wait";
+
     private List<Data> data;
+    private String error;
 
     public List<Data> getQueryData() {
         return data;
+    }
+
+    public String getError() {
+        return error;
+    }
+    
+    public boolean isContinueWait() {
+        return error != null && error.equals(ERROR_CONTINUE_WAIT);
     }
 
 }

@@ -20,6 +20,7 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.thespheres.nbc.stats.convert.model.School;
 
 /**
  *
@@ -57,11 +58,12 @@ public class Main {
         final Path out = Paths.get(cfg.getOutDir());
         final Schools schools;
         final String api = cfg.getApi();
+        final boolean useToken = cmd.hasOption("t");
         if (Files.exists(schoolsDump)) {
             schools = SchoolsFile.read(schoolsDump);
         } else if (api != null) {
             String token = null;
-            if (cmd.hasOption("t")) {
+            if (useToken) {
                 final Path tokenFile = Paths.get(cmd.getOptionValue("t"));
                 if (!Files.exists(tokenFile)) {
                     throw new Exception("JWT file does not exist.");
@@ -73,20 +75,26 @@ public class Main {
             final Path schoolsFile = Paths.get(cfg.getSchoolsFile());
             schools = SchoolsFile.read(schoolsFile);
         }
-
+        
         try (final WritableByteChannel ch = Files.newByteChannel(schoolsDump, StandardOpenOption.CREATE, StandardOpenOption.WRITE); final Writer w = Channels.newWriter(ch, "utf8")) {
             schools.dump(w);
         }
 
         final CubeJSReader r = new CubeJSReader(cfg.getCubeJS(), out);
         r.read();
-        
+
         final CubeJSPagesPerSchoolReader p = new CubeJSPagesPerSchoolReader(schools, cfg.getCubeJS(), out);
         p.read();
-        
+
         final CubeJSPerSchoolReader sr = new CubeJSPerSchoolReader(schools, cfg.getCubeJS(), out);
         for (final CubeJSPerSchoolReader.Type type : CubeJSPerSchoolReader.Type.values()) {
             sr.read(type);
+        }
+
+        if (useToken) {
+            try (final WritableByteChannel ch = Files.newByteChannel(schoolsDump, StandardOpenOption.CREATE, StandardOpenOption.WRITE); final Writer w = Channels.newWriter(ch, "utf8")) {
+                schools.dump(w);
+            }
         }
     }
 

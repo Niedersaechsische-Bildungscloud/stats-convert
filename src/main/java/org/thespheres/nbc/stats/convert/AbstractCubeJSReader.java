@@ -36,18 +36,18 @@ import org.thespheres.nbc.stats.convert.model.QueryResult;
  */
 public class AbstractCubeJSReader {
 
-    public static final int MAX_RETRY = 10;
+    //public static final int MAX_RETRY = 30;
     protected final CloseableHttpClient client;
     protected final String cubeJS;
     protected final Path outputDir;
-
+    
     protected AbstractCubeJSReader(final String cubeJS, final Path outputDir) {
         final HttpClientBuilder builder = HttpClients.custom();
         this.client = builder.build();
         this.cubeJS = cubeJS;
         this.outputDir = outputDir;
     }
-
+    
     protected QueryResult executeQuery(final String uri) throws IOException, InterruptedException {
         final Gson gson = new GsonBuilder()
                 .setPrettyPrinting()
@@ -55,19 +55,20 @@ public class AbstractCubeJSReader {
         final HttpGet get = new HttpGet(uri);
         QueryResult result = executeQueryImpl(get, uri, gson);
         int retry = 0;
-        while (result == null || result.getQueryData() == null && retry++ <= MAX_RETRY) {
-            Logger.getLogger(SchoolsAPI.class.getName()).log(Level.INFO, "Retry {0}", retry);
-            Thread.sleep(10 * 1000);
+        while (result == null || result.getQueryData() == null && result.isContinueWait()) { //retry++ <= MAX_RETRY) {
+            Logger.getLogger(SchoolsAPI.class.getName()).log(Level.INFO, "Retry {0}", ++retry);
+            Thread.sleep(60 * 1000);
             result = executeQueryImpl(get, uri, gson);
         }
         gson.toJson(result, System.out);
         return result;
     }
-
+    
     private QueryResult executeQueryImpl(final HttpGet get, final String uri, final Gson gson) throws JsonIOException, JsonSyntaxException, IOException {
         //        get.addHeader(uri, uri);
         CloseableHttpResponse response = client.execute(get);
         if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+            Logger.getLogger(SchoolsAPI.class.getName()).log(Level.INFO, EntityUtils.toString(response.getEntity()));
             throw new IOException("Unexpected response status: " + response.getStatusLine() + " at: " + uri);
         }
         HttpEntity entity = response.getEntity();
@@ -85,7 +86,7 @@ public class AbstractCubeJSReader {
         }
         return result;
     }
-
+    
     protected CsvWriter createCsvWriter(final String typeName) throws IOException {
         final String today = LocalDate.now().toString();
         final String file = "stat_" + today + "_" + typeName + ".csv";
