@@ -10,7 +10,7 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.5.0:exec</goal>
             </goals>
             <properties>
-                <exec.args>-agentlib:jdwp=transport=dt_socket,server=n,address=${jpda.address} -classpath %classpath ${packageClassName} -t token.txt</exec.args>
+                <exec.args>-agentlib:jdwp=transport=dt_socket,server=n,address=${jpda.address} -classpath %classpath ${packageClassName} -t token.txt -b basic-auth.txt</exec.args>
                 <exec.executable>java</exec.executable>
                 <jpda.listen>true</jpda.listen>
             </properties>
@@ -25,7 +25,7 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.5.0:exec</goal>
             </goals>
             <properties>
-                <exec.args>-classpath %classpath ${packageClassName} -t token.txt</exec.args>
+                <exec.args>-classpath %classpath org.thespheres.nbc.stats.convert.Main -t token.txt -b basic-auth.txt</exec.args>
                 <exec.executable>java</exec.executable>
             </properties>
         </action>
@@ -39,7 +39,7 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.5.0:exec</goal>
             </goals>
             <properties>
-                <exec.args>-classpath %classpath ${packageClassName} -t token.txt</exec.args>
+                <exec.args>-classpath %classpath ${packageClassName} -t token.txt -b basic-auth.txt</exec.args>
                 <exec.executable>java</exec.executable>
             </properties>
         </action>

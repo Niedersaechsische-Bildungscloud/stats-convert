@@ -30,8 +30,9 @@ class SchoolsAPI extends Schools {
     final CloseableHttpClient client;
     private final String api;
     private final String token;
+    private final String basicAuth;
 
-    SchoolsAPI(final String apiEndpoint, final String jwt) {
+    SchoolsAPI(final String apiEndpoint, final String jwt, final String auth) {
         RequestConfig.Builder requestBuilder = RequestConfig.custom();
         requestBuilder.setConnectTimeout(5000);
         requestBuilder.setConnectionRequestTimeout(5000);
@@ -40,6 +41,7 @@ class SchoolsAPI extends Schools {
         client = builder.build();
         api = apiEndpoint;
         token = jwt;
+        basicAuth = auth;
     }
 
     @Override
@@ -48,6 +50,10 @@ class SchoolsAPI extends Schools {
         final HttpGet get = new HttpGet(uri);
         if (token != null) {
             get.setHeader("Cookie", "jwt=" + token);
+            //get.setHeader("Authorization", "Bearer " + token);
+        }
+        if (basicAuth != null) {
+            get.setHeader("Authorization", "Basic " + basicAuth);
             //get.setHeader("Authorization", "Bearer " + token);
         }
         final CloseableHttpResponse response = client.execute(get);
