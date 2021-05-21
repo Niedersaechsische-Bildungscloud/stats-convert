@@ -56,7 +56,7 @@ public class CubeJSReader extends AbstractCubeJSReader {
                 .sorted()
                 .collect(Collectors.toList());
 
-        final DateTimeFormatter format = DateTimeFormatter.ofPattern("d. M.");
+        final DateTimeFormatter format = DateTimeFormatter.ofPattern("d.M.y");
         final List<String> headers = new ArrayList<>();
         headers.add("Datum");
         headers.add("Sessions");
